@@ -23,6 +23,18 @@ Coffee · Sport（Badminton / Other）· Music · Computer Science（Algorithm /
 把圖片放在 `content/public/images/panda.jpg`（頭像，建議正方形、400×400px 以上，會裁成圓形）。
 想用其他檔名或格式，改 `frontend/src/config.ts` 的 `heroImage`。圖片不存在時首頁只會顯示文字。
 
+## 首頁標語字型
+
+標語使用「辰宇落雁體」（OFL-1.1），只內嵌標語用到的字元（約 10KB）。
+修改 `frontend/src/config.ts` 的 `tagline` 後要重新產生：
+
+```bash
+pip install fonttools
+python3 scripts/subset_tagline_font.py
+```
+
+沒重新產生的話，新加的字會以霞鶩文楷顯示。
+
 ## 發文流程
 
 1. 到網站的「後台」，用 GitHub 登入（或貼上 Personal Access Token）

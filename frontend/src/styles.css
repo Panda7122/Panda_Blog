@@ -22,6 +22,7 @@
   --font: 'Noto Sans TC', system-ui, -apple-system, 'PingFang TC', sans-serif;
   --font-serif: 'Noto Serif TC', 'Noto Sans TC', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-hand: 'Tagline Hand', 'LXGW WenKai TC', 'Noto Serif TC', serif;
 }
 
 * { box-sizing: border-box; }
@@ -155,7 +156,7 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
   display: block; width: 160px; height: 160px; object-fit: cover; margin: 0 auto 20px;
   border-radius: 50%; border: 5px solid var(--surface); box-shadow: 0 0 0 2px var(--lav-300), var(--shadow-hover);
 }
-.hero-tagline { font-family: var(--font-serif); color: var(--lav-700); font-size: clamp(1.1rem, 2.6vw, 1.4rem); letter-spacing: 0.08em; margin: 0; }
+.hero-tagline { font-family: var(--font-hand); color: var(--lav-800); font-size: clamp(1.6rem, 4.2vw, 2.3rem); letter-spacing: 0.1em; margin: 0; }
 
 /* ---------- category cards ---------- */
 .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
