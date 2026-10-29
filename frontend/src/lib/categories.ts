@@ -18,7 +18,7 @@ export const categories: Category[] = [
       { slug: 'other', name: 'Other', icon: '🏃', description: '其他運動' },
     ],
   },
-  { slug: 'music', name: 'Music', icon: '🎵', description: '聽到的、彈過的、想分享的聲音' },
+  { slug: 'music', name: 'Music', icon: '🎵', description: '好聽的、讓我有感觸的音樂、練習紀錄' },
   {
     slug: 'computer-science',
     name: 'Computer Science',

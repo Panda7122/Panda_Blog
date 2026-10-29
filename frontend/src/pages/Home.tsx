@@ -4,6 +4,7 @@ import { config } from '../config';
 import { categories } from '../lib/categories';
 import { allPosts, pinnedPosts, postsIn } from '../lib/posts';
 import { PostCard } from '../components/PostCard';
+import { SocialLinks } from '../components/SocialLinks';
 
 export default function Home() {
   const latest = allPosts.filter((p) => !p.pinned).slice(0, 6);
@@ -16,6 +17,7 @@ export default function Home() {
             <img className="hero-image" src={config.heroImage} alt={config.siteTitle} onError={() => setHeroOk(false)} />
           )}
           <p className="hero-tagline">{config.tagline}</p>
+          <SocialLinks />
         </div>
       </section>
 

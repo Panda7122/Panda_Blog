@@ -9,6 +9,11 @@ export const config = {
   tagline: '一個人紀錄著沒有妳的生活',
   // 首頁中間的頭像，檔案放在 content/public/images/
   heroImage: 'images/panda.jpg',
+  // 標語下方的社群連結
+  socials: [
+    { kind: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/panda.coffee._._/' },
+    { kind: 'github', label: 'GitHub', url: 'https://github.com/Panda7122/' },
+  ] as { kind: 'instagram' | 'github'; label: string; url: string }[],
   owner,
   repo,
   branch: import.meta.env.VITE_GITHUB_BRANCH || 'master',

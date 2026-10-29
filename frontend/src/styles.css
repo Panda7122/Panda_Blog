@@ -158,6 +158,14 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 }
 .hero-tagline { font-family: var(--font-hand); color: var(--lav-800); font-size: clamp(1.6rem, 4.2vw, 2.3rem); letter-spacing: 0.1em; margin: 0; }
 
+.social-links { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
+.social-links a {
+  width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface); color: var(--lav-700); border: 1px solid var(--lav-200); box-shadow: var(--shadow);
+  transition: transform 0.15s, background 0.15s, color 0.15s;
+}
+.social-links a:hover { transform: translateY(-2px); background: var(--lav-600); border-color: var(--lav-600); color: #fff; }
+
 /* ---------- category cards ---------- */
 .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .category-card {
