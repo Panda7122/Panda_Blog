@@ -1,22 +1,36 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { config } from '../config';
 import { categories } from '../lib/categories';
-import { allPosts, postsIn } from '../lib/posts';
+import { allPosts, pinnedPosts, postsIn } from '../lib/posts';
 import { PostCard } from '../components/PostCard';
 
 export default function Home() {
-  const latest = allPosts.slice(0, 6);
+  const latest = allPosts.filter((p) => !p.pinned).slice(0, 6);
+  const [heroOk, setHeroOk] = useState(true);
   return (
     <>
       <section className="hero">
         <div className="container">
-          <p className="hero-eyebrow">Hello, welcome to</p>
-          <h1>{config.siteTitle}</h1>
+          {heroOk && (
+            <img className="hero-image" src={config.heroImage} alt={config.siteTitle} onError={() => setHeroOk(false)} />
+          )}
           <p className="hero-tagline">{config.tagline}</p>
         </div>
       </section>
 
       <div className="container">
+        {pinnedPosts.length > 0 && (
+          <section className="section">
+            <h2 className="section-title">置頂</h2>
+            <div className="post-list">
+              {pinnedPosts.map((p) => (
+                <PostCard key={p.file} post={p} />
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="section">
           <h2 className="section-title">分類</h2>
           <div className="category-grid">

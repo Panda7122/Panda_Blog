@@ -19,6 +19,8 @@ description: Create or edit a blog post in this repo (content/posts/<category>/<
 | Computer Science / MIR | `computer-science/mir` |
 | Computer Science / System | `computer-science/system` |
 | Drawing | `drawing` |
+| Game | `game` |
+| Others | `others` |
 
 這張表的真實來源是 `frontend/src/lib/categories.ts`；若兩者不一致，以程式碼為準並更新這張表。不要放在 `sport/`、`computer-science/` 這種有子分類的父層，網站不會顯示。
 
@@ -40,12 +42,22 @@ tags: ["標籤一", "標籤二"]
 summary: "選填，沒填會自動截取內文"
 cover: "media/xxx.jpg"
 draft: true
+pinned: true
 ---
 內文從這裡開始（不要再寫一個 # 標題，頁面會自動顯示 title）
 ```
 
 - `title`、`date`（YYYY-MM-DD）、`tags` 必填；`summary`、`cover`、`draft` 沒用到就整行省略
 - `draft: true` 的文章不會出現在網站上
+- `pinned: true` 置頂：首頁最上方「置頂」區塊顯示，分類頁排最前面，且不重複出現在「最新文章」
+
+## 內文語法
+
+- GitHub Flavored Markdown（表格、task list、刪除線）
+- 單一換行會照原樣換行（`remark-breaks`，和 HackMD 一樣）；空一行才是新段落
+- 數學式用 KaTeX：行內 `$...$`、獨立區塊 `$$...$$`。內文裡要寫錢字號時用 `\$`
+- 不支援 raw HTML（例如 `<u,e,in>` 會被吃掉），角括號放進數學式用 `\langle ... \rangle`，或放在 code 裡
+- 數學很多的文章務必寫 `summary`，否則列表卡片的摘要會顯示原始 LaTeX
 
 ## 4. 圖片與音檔
 
@@ -69,6 +81,8 @@ cover: media/1730000000000-cover.jpg
 - `src` 可以是音檔（mp3/wav/ogg/m4a/flac → 自訂播放器）、YouTube、Spotify（track/album/playlist）、SoundCloud 網址（→ 內嵌 iframe）
 - 只有 `src` 必填；`cover` 只對音檔播放器有效
 - 解析邏輯在 `frontend/src/components/MusicBlock.tsx`；新增平台支援時改 `detectEmbed`
+
+注意：`others`（頂層「Others」分欄）和 `sport/other`（Sport 底下的 Other）是不同分類。
 
 ## 6. 驗證
 

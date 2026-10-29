@@ -31,6 +31,8 @@ export const categories: Category[] = [
     ],
   },
   { slug: 'drawing', name: 'Drawing', icon: '🎨', description: '塗鴉與作品' },
+  { slug: 'game', name: 'Game', icon: '🎮', description: '遊戲紀錄與心得' },
+  { slug: 'others', name: 'Others', icon: '🗂️', description: '其他雜記' },
 ];
 
 export interface ResolvedCategory {

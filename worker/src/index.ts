@@ -1,5 +1,5 @@
 /**
- * Record Blog 的後端：GitHub OAuth 換 token。
+ * 碎心日記的後端：GitHub OAuth 換 token。
  *
  * GET /login?origin=<前端 origin>  → 導向 GitHub 授權頁
  * GET /callback?code&state         → 用 client secret 換 access token，
@@ -115,6 +115,6 @@ export default {
     const { pathname } = new URL(req.url);
     if (pathname === '/login') return handleLogin(req, env);
     if (pathname === '/callback') return handleCallback(req, env);
-    return new Response('Record Blog OAuth worker is running.', { headers: { 'Content-Type': 'text/plain' } });
+    return new Response('Blog OAuth worker is running.', { headers: { 'Content-Type': 'text/plain' } });
   },
 };

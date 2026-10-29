@@ -322,6 +322,10 @@ export default function Editor() {
             <input type="checkbox" checked={meta.draft} onChange={(e) => updateMeta({ draft: e.target.checked })} />
             草稿（不顯示在網站上）
           </label>
+          <label className="checkbox">
+            <input type="checkbox" checked={meta.pinned} onChange={(e) => updateMeta({ pinned: e.target.checked })} />
+            📌 置頂
+          </label>
         </div>
       </div>
 

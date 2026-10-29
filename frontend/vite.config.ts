@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   // content/public 底下的檔案（音樂、圖片）會原封不動複製到網站根目錄
   publicDir: '../content/public',
-  build: { chunkSizeWarningLimit: 700 },
+  build: { chunkSizeWarningLimit: 900 },
   server: {
     fs: { allow: ['..'] },
   },

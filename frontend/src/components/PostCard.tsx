@@ -5,11 +5,12 @@ import { postUrl, type Post } from '../lib/posts';
 export function PostCard({ post }: { post: Post }) {
   const cat = findCategory(post.category);
   return (
-    <article className="post-card">
+    <article className={`post-card ${post.pinned ? 'is-pinned' : ''}`}>
       <Link to={postUrl(post)} className="post-card-link">
         {post.cover && <img className="post-card-cover" src={post.cover} alt="" loading="lazy" />}
         <div className="post-card-body">
           <div className="post-card-meta">
+            {post.pinned && <span className="chip chip-pinned">📌 置頂</span>}
             <span className="chip">
               {cat?.category.icon} {categoryLabel(post.category)}
             </span>

@@ -1,5 +1,8 @@
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkBreaks from 'remark-breaks';
+import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import type { ElementContent } from 'hast';
 import { MusicBlock } from './MusicBlock';
@@ -40,8 +43,8 @@ export function Markdown({ source, resolveMedia = identity }: { source: string; 
   return (
     <div className="prose">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypeHighlight, { detect: false, plainText: ['music'] }]]}
+        remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
+        rehypePlugins={[rehypeKatex, [rehypeHighlight, { detect: false, plainText: ['music'] }]]}
         components={components}
       >
         {source}

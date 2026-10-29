@@ -4,8 +4,10 @@ const repoFull = import.meta.env.VITE_GITHUB_REPO || 'your-github-name/record_bl
 const [owner, repo] = repoFull.split('/');
 
 export const config = {
-  siteTitle: import.meta.env.VITE_SITE_TITLE || 'Record Blog',
-  tagline: '咖啡、球場、音樂、程式與畫筆之間的日常紀錄',
+  siteTitle: import.meta.env.VITE_SITE_TITLE || '碎心日記',
+  tagline: '一個心碎的人紀錄著沒有妳的生活',
+  // 首頁中間的頭像，檔案放在 content/public/images/
+  heroImage: 'images/panda.jpg',
   owner,
   repo,
   branch: import.meta.env.VITE_GITHUB_BRANCH || 'main',

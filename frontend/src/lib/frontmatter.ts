@@ -5,6 +5,8 @@ export interface PostMeta {
   summary: string;
   cover: string;
   draft: boolean;
+  /** 置頂：首頁與分類頁都排在最前面 */
+  pinned: boolean;
 }
 
 export const emptyMeta = (): PostMeta => ({
@@ -14,6 +16,7 @@ export const emptyMeta = (): PostMeta => ({
   summary: '',
   cover: '',
   draft: false,
+  pinned: false,
 });
 
 function parseValue(v: string): unknown {
@@ -57,6 +60,7 @@ export function parseFrontmatter(raw: string): { meta: PostMeta; body: string } 
   if (typeof data.summary === 'string') meta.summary = data.summary;
   if (typeof data.cover === 'string') meta.cover = data.cover;
   meta.draft = data.draft === true;
+  meta.pinned = data.pinned === true;
   return { meta, body: text.slice(m[0].length) };
 }
 
@@ -70,6 +74,7 @@ export function stringifyPost(meta: PostMeta, body: string): string {
   if (meta.summary) lines.push(`summary: ${JSON.stringify(meta.summary)}`);
   if (meta.cover) lines.push(`cover: ${JSON.stringify(meta.cover)}`);
   if (meta.draft) lines.push('draft: true');
+  if (meta.pinned) lines.push('pinned: true');
   lines.push('---', '');
   return lines.join('\n') + body.replace(/^\n+/, '') + (body.endsWith('\n') ? '' : '\n');
 }

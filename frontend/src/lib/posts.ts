@@ -52,8 +52,15 @@ export const allPosts: Post[] = Object.entries(files)
   .filter((p) => !p.draft)
   .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.title.localeCompare(b.title)));
 
+export const pinnedPosts: Post[] = allPosts.filter((p) => p.pinned);
+
+/** 置頂文章排最前面，其餘維持日期新到舊 */
+const pinnedFirst = (posts: Post[]) => [...posts.filter((p) => p.pinned), ...posts.filter((p) => !p.pinned)];
+
 export function postsIn(categoryPath: string): Post[] {
-  return allPosts.filter((p) => p.category === categoryPath || p.category.startsWith(categoryPath + '/'));
+  return pinnedFirst(
+    allPosts.filter((p) => p.category === categoryPath || p.category.startsWith(categoryPath + '/')),
+  );
 }
 
 export function findPost(categoryPath: string, slug: string): Post | undefined {

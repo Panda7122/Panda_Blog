@@ -87,7 +87,7 @@ code { font-family: var(--font-mono); }
 .nav-toggle { display: none; background: none; border: 0; padding: 8px; cursor: pointer; flex-direction: column; gap: 4px; }
 .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--lav-700); border-radius: 2px; }
 
-@media (max-width: 860px) {
+@media (max-width: 1000px) {
   .nav-toggle { display: flex; }
   .nav {
     position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch;
@@ -114,6 +114,8 @@ code { font-family: var(--font-mono); }
 .empty.small { padding: 12px; font-size: 0.9rem; }
 
 .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; background: var(--lav-100); color: var(--lav-700); font-size: 0.8rem; font-weight: 500; }
+.chip-pinned { background: var(--lav-600); color: #fff; }
+.post-card.is-pinned { border-color: var(--lav-300); background: linear-gradient(135deg, #fff 60%, var(--lav-50)); }
 .chip.warn { background: #fff4dc; color: var(--warn); margin-left: 8px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag { font-size: 0.8rem; color: var(--lav-600); }
@@ -148,17 +150,15 @@ label input, label select {
 label input:focus, label select:focus, textarea:focus, .title-input:focus { outline: 2px solid var(--lav-300); outline-offset: 0; border-color: var(--lav-400); }
 
 /* ---------- hero ---------- */
-.hero { padding: 72px 0 24px; text-align: center; }
-.hero-eyebrow { color: var(--lav-500); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; margin: 0; }
-.hero h1 {
-  font-family: var(--font-serif); font-size: clamp(2.4rem, 6vw, 3.8rem); margin: 8px 0 12px; line-height: 1.2;
-  background: linear-gradient(120deg, var(--lav-800), var(--lav-500) 60%, #c58af0);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+.hero { padding: 56px 0 16px; text-align: center; }
+.hero-image {
+  display: block; width: 160px; height: 160px; object-fit: cover; margin: 0 auto 20px;
+  border-radius: 50%; border: 5px solid var(--surface); box-shadow: 0 0 0 2px var(--lav-300), var(--shadow-hover);
 }
-.hero-tagline { color: var(--muted); font-size: 1.05rem; margin: 0; }
+.hero-tagline { font-family: var(--font-serif); color: var(--lav-700); font-size: clamp(1.1rem, 2.6vw, 1.4rem); letter-spacing: 0.08em; margin: 0; }
 
 /* ---------- category cards ---------- */
-.category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .category-card {
   position: relative; display: flex; flex-direction: column; gap: 4px; padding: 22px 20px;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
@@ -239,6 +239,7 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 .prose hr { border: 0; height: 1px; background: var(--border); margin: 2em 0; }
 .prose ul, .prose ol { padding-left: 1.5em; }
 .prose li { margin: 0.25em 0; }
+.prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
 .prose input[type='checkbox'] { accent-color: var(--lav-600); }
 
 /* ---------- music ---------- */

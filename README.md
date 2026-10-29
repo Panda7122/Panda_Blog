@@ -1,4 +1,6 @@
-# Record Blog
+# 碎心日記
+
+> 一個心碎的人紀錄著沒有妳的生活
 
 淺紫色基調的個人部落格。前後端分離，前端部署在 GitHub Pages，後台用 GitHub 帳號登入後直接把文章 commit 回這個 repo。
 
@@ -13,8 +15,13 @@ content/public/      靜態檔，上傳的音樂/圖片在 content/public/media/
 
 ## 分欄
 
-Coffee · Sport（Badminton / Other）· Music · Computer Science（Algorithm / MIR / System）· Drawing
+Coffee · Sport（Badminton / Other）· Music · Computer Science（Algorithm / MIR / System）· Drawing · Game · Others
 定義在 `frontend/src/lib/categories.ts`。
+
+## 首頁圖片
+
+把圖片放在 `content/public/images/panda.jpg`（頭像，建議正方形、400×400px 以上，會裁成圓形）。
+想用其他檔名或格式，改 `frontend/src/config.ts` 的 `heroImage`。圖片不存在時首頁只會顯示文字。
 
 ## 發文流程
 
