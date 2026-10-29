@@ -63,7 +63,7 @@ repo 名稱、站長帳號由 workflow 自動帶入，不需要改程式。
 1. GitHub → Settings → Developer settings → **OAuth Apps** → New OAuth App
    - Homepage URL：`https://<帳號>.github.io/<repo>/`
    - Authorization callback URL：`https://record-blog-oauth.<你的子網域>.workers.dev/callback`
-2. 修改 `worker/wrangler.toml` 的 `ALLOWED_USER`、`ALLOWED_ORIGINS`，然後：
+2. `worker/wrangler.toml` 已設定好 `ALLOWED_USER = "Panda7122"`（用自訂網域的話要改 `ALLOWED_ORIGINS`），然後：
    ```bash
    cd worker
    npm install
@@ -79,6 +79,6 @@ repo 名稱、站長帳號由 workflow 自動帶入，不需要改程式。
 
 ## 安全性
 
-- Worker 只會把 token 發給 `ALLOWED_USER`，前端也會再檢查登入帳號是否為 repo 擁有者
+- 只有 GitHub 帳號 **Panda7122** 能登入後台：Worker 只會把 token 發給 `ALLOWED_USER`，前端 `config.ts` 的 `adminUser` 也會再檢查一次
 - 真正的權限由 GitHub 控管：沒有這個 repo 寫入權限的人就算拿到後台頁面也無法發文
 - token 只存在你自己瀏覽器的 localStorage；在公用電腦用完請登出

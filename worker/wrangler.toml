@@ -4,9 +4,9 @@ compatibility_date = "2024-11-01"
 
 [vars]
 # 只有這個 GitHub 帳號能拿到 token
-ALLOWED_USER = "your-github-name"
+ALLOWED_USER = "Panda7122"
 # 允許開啟登入視窗的前端網址（只寫 origin，不含路徑），逗號分隔
-ALLOWED_ORIGINS = "https://your-github-name.github.io,http://localhost:5173"
+ALLOWED_ORIGINS = "https://panda7122.github.io,http://localhost:5173"
 # 公開 repo 用 public_repo；私有 repo 改成 repo
 OAUTH_SCOPE = "public_repo"
 

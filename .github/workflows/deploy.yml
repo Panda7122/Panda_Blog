@@ -2,7 +2,7 @@ name: Deploy blog to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
     paths-ignore:
       - 'worker/**'
       - '.claude/**'
@@ -35,7 +35,6 @@ jobs:
         env:
           VITE_GITHUB_REPO: ${{ github.repository }}
           VITE_GITHUB_BRANCH: ${{ github.ref_name }}
-          VITE_ADMIN_USER: ${{ github.repository_owner }}
           VITE_OAUTH_URL: ${{ vars.OAUTH_URL }}
           VITE_SITE_TITLE: ${{ vars.SITE_TITLE }}
       - uses: actions/configure-pages@v5

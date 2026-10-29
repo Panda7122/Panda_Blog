@@ -30,7 +30,7 @@ GitHub OAuth 的 client secret 不能放前端，所以需要 `worker/` 這個�
    ```bash
    cd worker && npm install
    npx wrangler login
-   # 編輯 wrangler.toml：ALLOWED_USER、ALLOWED_ORIGINS（https://<user>.github.io，不含路徑）
+   # wrangler.toml 已設定 ALLOWED_USER=Panda7122、ALLOWED_ORIGINS=https://panda7122.github.io（改用自訂網域時要加上）
    npx wrangler secret put GITHUB_CLIENT_ID
    npx wrangler secret put GITHUB_CLIENT_SECRET
    npx wrangler deploy
@@ -42,13 +42,15 @@ GitHub OAuth 的 client secret 不能放前端，所以需要 `worker/` 這個�
 
 ## 自動帶入的設定
 
-workflow 會自動設定 `VITE_GITHUB_REPO`（= 這個 repo）、`VITE_GITHUB_BRANCH`、`VITE_ADMIN_USER`（= repo 擁有者）。repo 屬於 organization 時，`VITE_ADMIN_USER` 要改成個人帳號。
+workflow 會自動設定 `VITE_GITHUB_REPO`（= 這個 repo）與 `VITE_GITHUB_BRANCH`。
+
+站長帳號**刻意寫死**為 `Panda7122`：前端在 `frontend/src/config.ts` 的 `adminUser`，後端在 `worker/wrangler.toml` 的 `ALLOWED_USER`。使用者要求只有這個帳號能登入，不要改成讀環境變數或 repo 擁有者。
 
 ## 疑難排解
 
 | 症狀 | 原因 / 解法 |
 | --- | --- |
-| 登入後「不是這個部落格的站長」 | 登入的帳號 ≠ `VITE_ADMIN_USER`；或 Worker 的 `ALLOWED_USER` 打錯 |
+| 登入後「不是這個部落格的站長」 | 登入的帳號不是 `Panda7122`（`config.ts` 的 `adminUser` / Worker 的 `ALLOWED_USER`） |
 | 彈窗顯示 Origin not allowed | `ALLOWED_ORIGINS` 少了前端 origin（本機是 `http://localhost:5173`） |
 | redirect_uri mismatch | OAuth App 的 callback URL 和 Worker 網址不一致 |
 | 發文 404 / 403 | token 沒有該 repo 的 Contents 寫入權限；私有 repo 要把 `OAUTH_SCOPE` 改成 `repo` |
