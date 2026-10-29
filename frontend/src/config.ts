@@ -5,7 +5,7 @@ const [owner, repo] = repoFull.split('/');
 
 export const config = {
   siteTitle: import.meta.env.VITE_SITE_TITLE || '碎心日記',
-  tagline: '一個心碎的人紀錄著沒有妳的生活',
+  tagline: '一個人紀錄著沒有妳的生活',
   // 首頁中間的頭像，檔案放在 content/public/images/
   heroImage: 'images/panda.jpg',
   owner,

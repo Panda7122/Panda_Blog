@@ -29,6 +29,9 @@ async function gh<T>(token: string, path: string, init: RequestInit = {}): Promi
     } catch {
       /* ignore */
     }
+    if (res.status === 403 && /not accessible by (personal access|integration)/i.test(msg)) {
+      msg += `（token 權限不足：請到 GitHub token 設定，確認有選 ${config.owner}/${config.repo}，且 Contents 為 Read and write）`;
+    }
     throw new GitHubError(res.status, `GitHub API ${res.status}: ${msg}`);
   }
   return res.status === 204 ? (undefined as T) : res.json();
