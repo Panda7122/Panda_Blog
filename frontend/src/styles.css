@@ -41,6 +41,72 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ---------- 背景動態：緩慢漂移的光暈與往上飄的小光點 ---------- */
+.bg-decor { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.bg-glow { position: absolute; border-radius: 50%; will-change: transform; }
+.bg-glow-1 {
+  width: 60vmax; height: 60vmax; top: -22vmax; right: -18vmax;
+  background: radial-gradient(circle, rgba(212, 193, 253, 0.55) 0%, rgba(212, 193, 253, 0) 65%);
+  animation: glow-a 46s ease-in-out infinite alternate;
+}
+.bg-glow-2 {
+  width: 50vmax; height: 50vmax; bottom: -20vmax; left: -16vmax;
+  background: radial-gradient(circle, rgba(232, 221, 255, 0.75) 0%, rgba(232, 221, 255, 0) 65%);
+  animation: glow-b 58s ease-in-out infinite alternate;
+}
+.bg-glow-3 {
+  width: 36vmax; height: 36vmax; top: 38%; left: 42%;
+  background: radial-gradient(circle, rgba(244, 222, 250, 0.6) 0%, rgba(244, 222, 250, 0) 65%);
+  animation: glow-c 40s ease-in-out infinite alternate;
+}
+@keyframes glow-a {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-8vw, 10vh) scale(1.12); }
+}
+@keyframes glow-b {
+  from { transform: translate(0, 0) scale(1.05); }
+  to { transform: translate(10vw, -8vh) scale(0.95); }
+}
+@keyframes glow-c {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { transform: translate(-30%, -70%) scale(1.15); opacity: 0.7; }
+}
+.bg-mote {
+  position: absolute; bottom: -12px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(154, 114, 240, 0.85) 0%, rgba(184, 154, 247, 0.5) 45%, rgba(184, 154, 247, 0) 72%);
+  opacity: 0; will-change: transform, opacity;
+  animation-name: mote-rise; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+@keyframes mote-rise {
+  0% { transform: translate(0, 0); opacity: 0; }
+  12% { opacity: 0.7; }
+  50% { transform: translate(var(--drift), -55vh); }
+  85% { opacity: 0.5; }
+  100% { transform: translate(0, -110vh); opacity: 0; }
+}
+.bg-floater {
+  position: absolute; color: var(--lav-500); opacity: 0.26;
+  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  will-change: transform;
+  animation-name: floater-wander; animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite; animation-direction: alternate;
+}
+@keyframes floater-wander {
+  0% { transform: translate(0, 0) rotate(var(--r0)); }
+  33% { transform: translate(var(--x1), var(--y1)) rotate(var(--r1)); }
+  66% { transform: translate(var(--x2), var(--y2)) rotate(var(--r0)); }
+  100% { transform: translate(var(--x3), var(--y3)) rotate(var(--r1)); }
+}
+@media (max-width: 640px) {
+  .bg-floater.hide-small { display: none; }
+  .bg-floater { opacity: 0.2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-glow, .bg-mote, .bg-floater { animation: none; }
+  .bg-mote { display: none; }
+}
+
 a { color: var(--lav-600); text-decoration: none; }
 a:hover { color: var(--lav-700); }
 

@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { config } from '../config';
 import { categories } from '../lib/categories';
+import { BackgroundDecor } from './BackgroundDecor';
 
 export function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -14,6 +15,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="site">
+      <BackgroundDecor />
       <header className="site-header">
         <div className="container header-inner">
           <Link to="/" className="brand">
