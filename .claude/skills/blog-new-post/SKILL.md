@@ -1,6 +1,6 @@
 ---
 name: blog-new-post
-description: Create or edit a blog post in this repo (content/posts/<category>/<slug>.md) with correct frontmatter, category path, media, and the ```music block. Use when the user asks to write, draft, add, move, or fix a post, or to insert music/images into one.
+description: Create or edit a blog post in this repo (content/posts/<category>/<slug>.md) with correct frontmatter, category path, media, and the ```music / ```video blocks. Use when the user asks to write, draft, add, move, or fix a post, or to insert music/images/videos into one.
 ---
 
 # 新增 / 編輯文章
@@ -81,6 +81,21 @@ cover: media/1730000000000-cover.jpg
 - `src` 可以是音檔（mp3/wav/ogg/m4a/flac → 自訂播放器）、YouTube、Spotify（track/album/playlist）、SoundCloud 網址（→ 內嵌 iframe）
 - 只有 `src` 必填；`cover` 只對音檔播放器有效
 - 解析邏輯在 `frontend/src/components/MusicBlock.tsx`；新增平台支援時改 `detectEmbed`
+
+## 5.5 影片（所有分類都可以）
+
+````markdown
+```video
+src: media/1730000000000-clip.mp4
+title: 顯示在影片下方的說明（選填）
+poster: media/1730000000000-cover.jpg
+```
+````
+
+- `src` 可以是影片檔（mp4/webm/mov/m4v/ogv → `<video>` 播放器）、YouTube 或 Vimeo 網址（→ 16:9 iframe）
+- 簡寫：`![說明](media/xxx.mp4)`，副檔名是影片時會自動變成播放器
+- 影片檔會直接進 repo，單檔上限 50MB；長影片建議放 YouTube 再貼網址
+- 解析邏輯在 `frontend/src/components/VideoBlock.tsx`
 
 注意：`others`（頂層「Others」分欄）和 `sport/other`（Sport 底下的 Other）是不同分類。
 

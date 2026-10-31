@@ -121,6 +121,80 @@ function MusicDialog({
   );
 }
 
+function VideoDialog({
+  onClose,
+  onInsert,
+  upload,
+}: {
+  onClose: () => void;
+  onInsert: (block: string) => void;
+  upload: (f: File) => Promise<string>;
+}) {
+  const [src, setSrc] = useState('');
+  const [title, setTitle] = useState('');
+  const [poster, setPoster] = useState('');
+  const [busy, setBusy] = useState('');
+
+  const pick = async (file: File | undefined, set: (s: string) => void, kind: string) => {
+    if (!file) return;
+    const mb = (file.size / 1024 / 1024).toFixed(1);
+    setBusy(`上傳${kind}中（${mb}MB），檔案大的話要等一陣子…`);
+    try {
+      set(await upload(file));
+    } catch (e) {
+      alert((e as Error).message);
+    } finally {
+      setBusy('');
+    }
+  };
+
+  const insert = () => {
+    const lines = ['```video', `src: ${src}`];
+    if (title) lines.push(`title: ${title}`);
+    if (poster) lines.push(`poster: ${poster}`);
+    lines.push('```');
+    onInsert('\n' + lines.join('\n') + '\n');
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h3>🎬 插入影片</h3>
+        <label>
+          影片來源
+          <input value={src} onChange={(e) => setSrc(e.target.value)} placeholder="上傳影片，或貼上 YouTube / Vimeo 網址" />
+        </label>
+        <label className="file-btn">
+          上傳影片（mp4 / webm / mov，{MAX_UPLOAD_MB}MB 以內）
+          <input type="file" accept="video/*" onChange={(e) => pick(e.target.files?.[0], setSrc, '影片')} />
+        </label>
+        <p className="muted small-note">影片會直接存進 GitHub repo，長影片建議先傳到 YouTube 再貼網址。</p>
+        <label>
+          說明文字（選填，顯示在影片下方）
+          <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        </label>
+        <label>
+          封面（選填，只用在上傳的影片）
+          <input value={poster} onChange={(e) => setPoster(e.target.value)} placeholder="圖片網址" />
+        </label>
+        <label className="file-btn">
+          上傳封面圖片
+          <input type="file" accept="image/*" onChange={(e) => pick(e.target.files?.[0], setPoster, '封面')} />
+        </label>
+        {busy && <p className="muted">{busy}</p>}
+        <div className="modal-actions">
+          <button className="btn btn-ghost" onClick={onClose}>
+            取消
+          </button>
+          <button className="btn btn-primary" onClick={insert} disabled={!src || !!busy}>
+            插入
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Editor() {
   const { token, user, checking } = useAuth();
   const [params] = useSearchParams();
@@ -142,6 +216,7 @@ export default function Editor() {
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
   const [showMusic, setShowMusic] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const imageInput = useRef<HTMLInputElement>(null);
 
@@ -494,6 +569,9 @@ export default function Editor() {
             e.target.value = '';
           }}
         />
+        <button onClick={() => setShowVideo(true)} title="插入影片">
+          🎬 影片
+        </button>
         {music ? (
           <button className="music-btn" onClick={() => setShowMusic(true)} title="插入音樂">
             🎵 插入音樂
@@ -528,6 +606,17 @@ export default function Editor() {
           onClose={() => setShowMusic(false)}
           onInsert={(block) => {
             setShowMusic(false);
+            insert(block);
+          }}
+        />
+      )}
+
+      {showVideo && (
+        <VideoDialog
+          upload={upload}
+          onClose={() => setShowVideo(false)}
+          onInsert={(block) => {
+            setShowVideo(false);
             insert(block);
           }}
         />

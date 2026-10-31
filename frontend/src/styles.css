@@ -286,6 +286,10 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 .range::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 3px solid var(--lav-600); }
 .music-error { color: var(--danger); font-size: 0.85rem; margin-top: 6px; }
 .music-embed { margin: 1.5em 0; }
+.video-block { margin: 1.5em 0; }
+.video-block video { width: 100%; max-height: 75vh; display: block; border-radius: 14px; background: #1d1430; }
+.video-block .ratio-16x9 iframe { width: 100%; border: 0; border-radius: 14px; }
+.video-block figcaption { text-align: center; font-size: 0.88rem; color: var(--muted); margin-top: 8px; }
 .music-embed iframe { width: 100%; border: 0; border-radius: 14px; display: block; }
 .music-embed figcaption { text-align: center; font-size: 0.88rem; color: var(--muted); margin-top: 8px; }
 .ratio-16x9 { position: relative; padding-top: 56.25%; }

@@ -59,6 +59,17 @@ src: media/xxx.mp3
 ```
 ````
 
+所有分類都可以按「🎬 影片」插入影片：上傳 mp4 / webm / mov（50MB 以內），或貼 YouTube / Vimeo 網址，會產生：
+
+````markdown
+```video
+src: media/xxx.mp4
+title: 影片說明（選填）
+```
+````
+
+也可以直接寫 `![說明](media/xxx.mp4)`。影片檔會存進 repo，長影片建議先傳到 YouTube 再貼網址。
+
 ## 本機開發
 
 ```bash
