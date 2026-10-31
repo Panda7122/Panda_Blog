@@ -1,10 +1,10 @@
 ---
 title: "歌曲分享：優里的ドライフラーワー"
 date: 2026-10-29
-tags: ["歌曲分享", "J-Pop", "優里"]
+tags: ["歌曲分享","J-Pop","優里"]
 ---
 ```music
-title: ドライフラーワ
+title: ドライフラーワー
 artist: 優里
 src: https://www.youtube.com/watch?v=kzZ6KXDM1RI
 ```
