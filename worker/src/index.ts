@@ -1,11 +1,16 @@
 /**
- * 碎心日記的後端：GitHub OAuth 換 token。
+ * 碎心日記的後端：GitHub OAuth 換 token，以及按讚 / 匿名留言 API（見 interact.ts）。
  *
  * GET /login?origin=<前端 origin>  → 導向 GitHub 授權頁
  * GET /callback?code&state         → 用 client secret 換 access token，
  *                                     確認是站長帳號後用 postMessage 傳回前端視窗
+ * /api/*                           → 按讚與留言
  */
+import { handleApi } from './interact';
+
 export interface Env {
+  DB: D1Database;
+  IP_SALT?: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   ALLOWED_USER: string;
@@ -115,6 +120,7 @@ export default {
     const { pathname } = new URL(req.url);
     if (pathname === '/login') return handleLogin(req, env);
     if (pathname === '/callback') return handleCallback(req, env);
+    if (pathname.startsWith('/api/')) return handleApi(req, env);
     return new Response('Blog OAuth worker is running.', { headers: { 'Content-Type': 'text/plain' } });
   },
 };

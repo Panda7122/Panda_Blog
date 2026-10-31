@@ -40,6 +40,23 @@ GitHub OAuth 的 client secret 不能放前端，所以需要 `worker/` 這個�
    - `SITE_TITLE` = 網站名稱（選填）
 4. Actions → 重新執行部署（或 push 任一 commit），登入頁就會出現 GitHub 按鈕
 
+## 3. 按讚與匿名留言（選用）
+
+資料存在 Cloudflare D1，API 在同一個 Worker 的 `/api/*`（`worker/src/interact.ts`，schema 在 `worker/migrations/`）。
+
+```bash
+cd worker
+npx wrangler d1 create panda-blog          # database_id 貼到 wrangler.toml 的 [[d1_databases]]（預設是全 0 的佔位）
+npx wrangler d1 migrations apply panda-blog --remote
+npx wrangler secret put IP_SALT
+npx wrangler deploy
+```
+
+repo Variables 加 `API_URL` = Worker 網址（沒設時前端會退而使用 `OAUTH_URL`；兩者都沒有就不顯示按讚留言區）。
+前端 origin 必須列在 `ALLOWED_ORIGINS`，否則 CORS 會擋。
+
+本機測試：`npx wrangler d1 migrations apply panda-blog --local`，`npx wrangler dev --port 8787 --var "ALLOWED_ORIGINS:http://localhost:5173"`，前端用 `VITE_API_URL=http://localhost:8787 npm run dev`。
+
 ## 自動帶入的設定
 
 workflow 會自動設定 `VITE_GITHUB_REPO`（= 這個 repo）與 `VITE_GITHUB_BRANCH`。

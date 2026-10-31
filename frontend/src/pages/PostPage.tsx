@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { categoryLabel, findCategory } from '../lib/categories';
 import { allPosts, findPost, postUrl } from '../lib/posts';
 import { Markdown } from '../components/Markdown';
+import { PostInteractions } from '../components/PostInteractions';
 import NotFound from './NotFound';
 
 export default function PostPage() {
@@ -54,6 +55,8 @@ export default function PostPage() {
         {post.cover && <img className="article-cover" src={post.cover} alt="" />}
         <Markdown source={post.body} />
       </article>
+
+      <PostInteractions post={`${post.category}/${post.slug}`} />
 
       <nav className="post-nav">
         {older ? (

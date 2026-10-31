@@ -10,6 +10,16 @@ ALLOWED_ORIGINS = "https://panda7122.github.io,http://localhost:5173"
 # 公開 repo 用 public_repo；私有 repo 改成 repo
 OAUTH_SCOPE = "public_repo"
 
-# 以下兩個用 secret 設定，不要寫在這裡：
+# 以下用 secret 設定，不要寫在這裡：
 #   npx wrangler secret put GITHUB_CLIENT_ID
 #   npx wrangler secret put GITHUB_CLIENT_SECRET
+#   npx wrangler secret put IP_SALT          # 任意一串亂碼，用來雜湊訪客 IP
+
+# 按讚與留言的資料庫
+#   1. npx wrangler d1 create panda-blog      → 把印出來的 database_id 貼到下面
+#   2. npx wrangler d1 migrations apply panda-blog --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "panda-blog"
+database_id = "b9d5f0a9-f1bd-44a3-b283-1067e540ce01"
+

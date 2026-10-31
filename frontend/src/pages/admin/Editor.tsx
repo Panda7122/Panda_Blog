@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { config } from '../../config';
 import { useAuth } from '../../lib/auth';
 import { isMusicCategory, leafCategories } from '../../lib/categories';
 import { emptyMeta, parseFrontmatter, stringifyPost, type PostMeta } from '../../lib/frontmatter';
+import { formatSavedAt, loadDraft, removeDraft, saveDraft, type Draft, type DraftData } from '../../lib/drafts';
 import { deleteFile, fileToBase64, getFile, putFile, rawMediaUrl, utf8ToBase64 } from '../../lib/github';
 import { Markdown } from '../../components/Markdown';
 import Login from './Login';
@@ -25,6 +26,14 @@ function slugify(title: string): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `post-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
 }
+
+const blankData = (): DraftData => ({
+  meta: emptyMeta(),
+  tagsText: '',
+  category: leafCategories()[0].path,
+  slug: '',
+  body: '',
+});
 
 const safeFileName = (name: string) => name.replace(/[^\w.\-一-鿿]+/g, '_');
 
@@ -117,13 +126,15 @@ export default function Editor() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const file = params.get('file');
+  const draftParam = params.get('draft');
 
-  const [meta, setMeta] = useState<PostMeta>(emptyMeta);
-  const [tagsText, setTagsText] = useState('');
-  const [category, setCategory] = useState(leafCategories()[0].path);
-  const [slug, setSlug] = useState('');
+  const [initial] = useState(blankData);
+  const [meta, setMeta] = useState<PostMeta>(initial.meta);
+  const [tagsText, setTagsText] = useState(initial.tagsText);
+  const [category, setCategory] = useState(initial.category);
+  const [slug, setSlug] = useState(initial.slug);
   const [slugTouched, setSlugTouched] = useState(false);
-  const [body, setBody] = useState('');
+  const [body, setBody] = useState(initial.body);
   const [sha, setSha] = useState<string>();
   const [origPath, setOrigPath] = useState<string>();
   const [view, setView] = useState<View>('split');
@@ -134,6 +145,33 @@ export default function Editor() {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const imageInput = useRef<HTMLInputElement>(null);
 
+  // 本機暫存：既有文章用 file:<path>，新文章用 new-<時間戳>
+  const [newId] = useState(() => `new-${Date.now().toString(36)}`);
+  const draftId = file ? `file:${file}` : (draftParam ?? newId);
+  const data = useMemo<DraftData>(() => ({ meta, tagsText, category, slug, body }), [meta, tagsText, category, slug, body]);
+  const snapshot = useMemo(() => JSON.stringify(data), [data]);
+  const [baseline, setBaseline] = useState(() => JSON.stringify(initial));
+  const [savedAt, setSavedAt] = useState<number>();
+  const [pending, setPending] = useState<Draft | null>(null);
+  const loadedDraft = useRef<string>();
+  const dirty = snapshot !== baseline;
+
+  const applyData = (d: DraftData) => {
+    setMeta(d.meta);
+    setTagsText(d.tagsText);
+    setCategory(d.category);
+    setSlug(d.slug);
+    setSlugTouched(!!d.slug);
+    setBody(d.body);
+    setBaseline(JSON.stringify({ meta: d.meta, tagsText: d.tagsText, category: d.category, slug: d.slug, body: d.body }));
+  };
+
+  const applyDraft = (d: Draft) => {
+    applyData(d);
+    setSavedAt(d.savedAt);
+    setPending(null);
+  };
+
   // 載入既有文章
   useEffect(() => {
     if (!token || !file || file === origPath) return;
@@ -142,18 +180,78 @@ export default function Editor() {
       .then(({ text, sha }) => {
         const { meta, body } = parseFrontmatter(text);
         const rel = file.slice(config.postsDir.length + 1).replace(/\.md$/, '').split('/');
-        setSlug(rel.pop()!);
-        setSlugTouched(true);
-        setCategory(rel.join('/'));
-        setMeta({ ...meta, date: meta.date || emptyMeta().date });
-        setTagsText(meta.tags.join(', '));
-        setBody(body);
+        const slug = rel.pop()!;
+        applyData({
+          meta: { ...meta, date: meta.date || emptyMeta().date },
+          tagsText: meta.tags.join(', '),
+          category: rel.join('/'),
+          slug,
+          body,
+        });
         setSha(sha);
         setOrigPath(file);
+        setSavedAt(undefined);
+        const local = loadDraft(`file:${file}`);
+        if (local && params.get('restore')) applyDraft(local);
+        else setPending(local ?? null);
       })
       .catch((e) => setNotice({ kind: 'error', text: (e as Error).message }))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, file, origPath]);
+
+  // 從後台列表點進新文章的暫存
+  useEffect(() => {
+    if (file || !draftParam || loadedDraft.current === draftParam) return;
+    loadedDraft.current = draftParam;
+    const d = loadDraft(draftParam);
+    if (d) applyDraft(d);
+    else setNotice({ kind: 'error', text: '找不到這份暫存，可能已經發布或被清除了' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file, draftParam]);
+
+  const writeLocal = useCallback((): number | undefined => {
+    const at = Date.now();
+    const ok = saveDraft({ ...data, id: draftId, file: origPath, baseSha: sha, savedAt: at });
+    return ok ? at : undefined;
+  }, [data, draftId, origPath, sha]);
+
+  const saveLocal = useCallback(() => {
+    if (pending) return;
+    const at = writeLocal();
+    if (!at) return setNotice({ kind: 'error', text: '暫存失敗：瀏覽器儲存空間已滿或被停用' });
+    setBaseline(snapshot);
+    setSavedAt(at);
+    // 新文章第一次暫存時把 id 放進網址，重新整理也能接著寫
+    if (!file && !draftParam) {
+      loadedDraft.current = draftId;
+      navigate(`/admin/edit?draft=${draftId}`, { replace: true });
+    }
+  }, [pending, writeLocal, snapshot, file, draftParam, draftId, navigate]);
+
+  // 每 10 秒自動暫存一次（有改動才存）
+  const autoSave = useRef(() => {});
+  autoSave.current = () => {
+    if (dirty && !loading && !pending) saveLocal();
+  };
+  useEffect(() => {
+    const id = setInterval(() => autoSave.current(), 10000);
+    return () => clearInterval(id);
+  }, []);
+
+  // 關閉分頁或離開編輯器時，把還沒暫存的內容補存
+  const flush = useRef(() => {});
+  flush.current = () => {
+    if (dirty && !loading && !pending) writeLocal();
+  };
+  useEffect(() => {
+    const onHide = () => flush.current();
+    window.addEventListener('pagehide', onHide);
+    return () => {
+      window.removeEventListener('pagehide', onHide);
+      onHide();
+    };
+  }, []);
 
   const updateMeta = (patch: Partial<PostMeta>) => {
     setMeta((m) => ({ ...m, ...patch }));
@@ -221,6 +319,10 @@ export default function Editor() {
         moved ? undefined : sha,
       );
       if (moved && sha) await deleteFile(token, origPath, sha, `post: move ${origPath} -> ${path}`);
+      removeDraft(draftId);
+      setBaseline(snapshot);
+      setSavedAt(undefined);
+      setPending(null);
       setSha(res.sha);
       setOrigPath(path);
       navigate(`/admin/edit?file=${encodeURIComponent(path)}`, { replace: true });
@@ -234,19 +336,19 @@ export default function Editor() {
     } finally {
       setSaving(false);
     }
-  }, [token, meta, slug, category, tagsText, body, origPath, sha, navigate]);
+  }, [token, meta, slug, category, tagsText, body, origPath, sha, navigate, draftId, snapshot]);
 
-  // Ctrl/Cmd + S 儲存
+  // Ctrl/Cmd + S 暫存到本機（不會推上 GitHub）
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
-        if (!saving) save();
+        saveLocal();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [save, saving]);
+  }, [saveLocal]);
 
   if (checking) return <div className="container page">驗證登入中…</div>;
   if (!token || !user) return <Login />;
@@ -267,10 +369,41 @@ export default function Editor() {
             </button>
           ))}
         </div>
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
-          {saving ? '發布中…' : origPath ? '更新文章' : '發布文章'}
-        </button>
+        <div className="editor-actions">
+          <span className="draft-status">
+            {pending ? '' : dirty ? '編輯中…' : savedAt ? `💾 已暫存於本機 ${formatSavedAt(savedAt)}` : ''}
+          </span>
+          <button className="btn btn-ghost" onClick={saveLocal} disabled={!dirty || !!pending} title="Ctrl / ⌘ + S">
+            暫存
+          </button>
+          <button className="btn btn-primary" onClick={save} disabled={saving}>
+            {saving ? '發布中…' : origPath ? '更新文章' : '發布文章'}
+          </button>
+        </div>
       </div>
+
+      {pending && (
+        <div className="alert draft-banner">
+          <span>
+            這篇文章有 {formatSavedAt(pending.savedAt)} 的本機暫存，還沒發布。
+            {pending.baseSha && pending.baseSha !== sha && ' 注意：GitHub 上的版本在那之後有被改過。'}
+          </span>
+          <span className="row-actions">
+            <button className="btn btn-small" onClick={() => applyDraft(pending)}>
+              還原暫存
+            </button>
+            <button
+              className="btn btn-small btn-danger"
+              onClick={() => {
+                removeDraft(pending.id);
+                setPending(null);
+              }}
+            >
+              捨棄暫存
+            </button>
+          </span>
+        </div>
+      )}
 
       {notice && <div className={`alert ${notice.kind}`}>{notice.text}</div>}
 

@@ -21,6 +21,8 @@ export const config = {
   adminUser: 'Panda7122',
   // Cloudflare Worker 的網址，例如 https://record-blog-oauth.xxx.workers.dev
   oauthUrl: (import.meta.env.VITE_OAUTH_URL || '').replace(/\/$/, ''),
+  // 按讚與留言 API，和 OAuth 是同一個 Worker；沒設定時文章頁不顯示按讚與留言
+  apiUrl: (import.meta.env.VITE_API_URL || import.meta.env.VITE_OAUTH_URL || '').replace(/\/$/, ''),
   postsDir: 'content/posts',
   mediaDir: 'content/public/media',
 };
