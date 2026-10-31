@@ -30,3 +30,17 @@ summary: "把剩下的九天沖完"
 但真的好貴QQ 原價半磅要700塊
 下面是 sogo 連結（如果有找到官網連結我會再貼上來）
 https://www.sogo.com.tw/product/011FB0P00003411
+
+## 沖泡畫面
+
+
+```video
+src: https://youtu.be/EC7ZuERfKl0
+title: 第一沖
+```
+
+```video
+src: https://youtube.com/shorts/bBFSewJISbQ?feature=share
+title: 第二沖
+```
+不知道為啥被判定成short了，不過今天沒有斷水蠻開心的
