@@ -87,6 +87,7 @@ cover: media/1730000000000-cover.jpg
 - `:::info` / `:::success` / `:::warning` / `:::danger` … `:::` → 彩色提示框
 - `:::spoiler 標題` … `:::` → 可摺疊區塊
 - 單獨一行 `[TOC]` → h1–h3 自動目錄（標題 id 由 rehype-slug 產生）
+- Emoji 簡碼 `:smile:`、`:coffee:`、`:+1:`（gemoji / GitHub 名稱，實作在 `frontend/src/lib/emoji.ts`）；不存在的名稱和程式碼裡的會原樣保留
 - 實作在 `frontend/src/lib/hackmd.ts`（remark-directive + 自訂外掛）；文中像 `key:value` 這種會被 remark-directive 誤判成 text directive 的寫法會被還原成原文字，不用跳脫
 
 ## 5.5 影片（所有分類都可以）

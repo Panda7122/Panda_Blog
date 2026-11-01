@@ -59,6 +59,8 @@ python3 scripts/subset_tagline_font.py
 :::spoiler 點我看答案
 摺疊起來的內容
 :::
+
+今天好開心 :smile: 喝咖啡 :coffee:   ← Emoji 簡碼（名稱同 GitHub），編輯器打 :sm 會跳出建議
 ````
 
 ### 本機暫存
