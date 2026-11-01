@@ -11,6 +11,7 @@ src: https://youtu.be/7qZ11NdJyz8?si=gZtkIcCWgNlcH6ai
 ```
 
 ## 歌詞
+```
 逞強竟成了一種習慣
 置身人群裡熱鬧狂歡
 欲蓋彌彰心底的孤單
@@ -46,7 +47,7 @@ src: https://youtu.be/7qZ11NdJyz8?si=gZtkIcCWgNlcH6ai
 當我脆弱得不堪一擊 無力承擔
 你是否還會願意 擁抱我的不安
 陪著我慢慢好起來 陪著我慢慢好起來
-
+```
 ## 心得
 這首歌是我在很想她的時候偶然接觸到的
 歌詞的部份完全戳中了我的心聲，
