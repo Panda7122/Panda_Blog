@@ -41,6 +41,26 @@ python3 scripts/subset_tagline_font.py
 2. 寫文章 → 按「發布文章」→ 後台透過 GitHub API 把 `content/posts/<分欄>/<slug>.md` commit 到 repo
 3. GitHub Actions 自動重新部署，約 1–2 分鐘後網站更新（後台右上角會顯示部署狀態）
 
+### 編輯器（參考 HackMD）
+
+- Markdown 語法上色、行號、程式碼區塊依語言上色，`Ctrl+F` 搜尋
+- 左右同步捲動：編輯到哪，預覽就跟到哪
+- 圖片、影片可以直接 **貼上（Ctrl+V）或拖曳** 進編輯器，會自動上傳
+- 清單按 Enter 會自動接下一項；快捷鍵 `Ctrl+B` 粗體、`Ctrl+I` 斜體、`Ctrl+K` 連結、`Ctrl+Shift+X` 刪除線
+- 支援 HackMD 語法：
+
+````markdown
+[TOC]                ← 自動目錄（h1–h3）
+
+:::info              ← 也可以用 success / warning / danger
+提示內容
+:::
+
+:::spoiler 點我看答案
+摺疊起來的內容
+:::
+````
+
 ### 本機暫存
 
 寫到一半不用發布：編輯器每 10 秒會自動暫存一次（有改動才存），也可以按「暫存」或 `Ctrl/⌘ + S`。暫存只存在這台裝置瀏覽器的 localStorage，**不會 commit 到 GitHub**，按「發布 / 更新文章」才會推上去，發布成功後暫存會自動清掉。

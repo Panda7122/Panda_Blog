@@ -7,6 +7,9 @@ import { emptyMeta, parseFrontmatter, stringifyPost, type PostMeta } from '../..
 import { formatSavedAt, loadDraft, removeDraft, saveDraft, type Draft, type DraftData } from '../../lib/drafts';
 import { deleteFile, fileToBase64, getFile, putFile, rawMediaUrl, utf8ToBase64 } from '../../lib/github';
 import { Markdown } from '../../components/Markdown';
+import { CodeEditor, type CursorInfo } from '../../components/CodeEditor';
+import type { EditorView } from '@codemirror/view';
+import { insertBlock, replaceText, toggleLinePrefix, wrapContainer, wrapSelection } from '../../lib/editorCommands';
 import Login from './Login';
 
 type View = 'split' | 'edit' | 'preview';
@@ -217,7 +220,10 @@ export default function Editor() {
   const [notice, setNotice] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null);
   const [showMusic, setShowMusic] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
-  const textarea = useRef<HTMLTextAreaElement>(null);
+  const cmRef = useRef<EditorView | null>(null);
+  const [cm, setCm] = useState<EditorView | null>(null);
+  const [cursor, setCursor] = useState<CursorInfo>({ line: 1, col: 1 });
+  const previewRef = useRef<HTMLDivElement>(null);
   const imageInput = useRef<HTMLInputElement>(null);
 
   // 本機暫存：既有文章用 file:<path>，新文章用 new-<時間戳>
@@ -333,17 +339,17 @@ export default function Editor() {
     if (patch.title !== undefined && !slugTouched) setSlug(slugify(patch.title));
   };
 
+  const onEditorReady = useCallback((v: EditorView | null) => {
+    cmRef.current = v;
+    setCm(v);
+  }, []);
+
+  const run = (fn: (v: EditorView) => void) => {
+    if (cmRef.current) fn(cmRef.current);
+  };
+
   const insert = useCallback((before: string, after = '', placeholder = '') => {
-    const ta = textarea.current;
-    if (!ta) return;
-    const { selectionStart: s, selectionEnd: e, value } = ta;
-    const selected = value.slice(s, e) || placeholder;
-    const next = value.slice(0, s) + before + selected + after + value.slice(e);
-    setBody(next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      ta.setSelectionRange(s + before.length, s + before.length + selected.length);
-    });
+    if (cmRef.current) wrapSelection(cmRef.current, before, after, placeholder);
   }, []);
 
   const upload = useCallback(
@@ -368,6 +374,113 @@ export default function Editor() {
       setNotice({ kind: 'error', text: (e as Error).message });
     }
   };
+
+  // 貼上或拖曳檔案到編輯器：先放佔位文字，上傳完再換成真正的 Markdown
+  const handleFiles = useCallback(
+    async (files: File[], pos: number | null) => {
+      const v = cmRef.current;
+      if (!v) return;
+      for (const f of files) {
+        const kind = f.type.startsWith('image/')
+          ? 'image'
+          : f.type.startsWith('video/')
+            ? 'video'
+            : f.type.startsWith('audio/')
+              ? 'audio'
+              : null;
+        if (!kind) {
+          setNotice({ kind: 'error', text: `不支援的檔案類型：${f.name}（可以貼圖片、影片${isMusicCategory(category) ? '、音檔' : ''}）` });
+          continue;
+        }
+        if (kind === 'audio' && !isMusicCategory(category)) {
+          setNotice({ kind: 'error', text: '音檔只能放在 Music 分類的文章' });
+          continue;
+        }
+        const name = f.name.replace(/\.[^.]+$/, '') || kind;
+        const marker = `![⏳ 上傳中：${name}…](uploading-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)})`;
+        const at = pos ?? v.state.selection.main.head;
+        const text = kind === 'image' ? marker : `\n${marker}\n`;
+        v.dispatch({ changes: { from: at, insert: text }, selection: { anchor: at + text.length }, userEvent: 'input' });
+        pos = null;
+        setNotice({ kind: 'ok', text: `上傳 ${f.name} 中…` });
+        try {
+          const src = await upload(f);
+          const md =
+            kind === 'image'
+              ? `![${name}](${src})`
+              : kind === 'video'
+                ? `\`\`\`video\nsrc: ${src}\n\`\`\``
+                : `\`\`\`music\ntitle: ${name}\nsrc: ${src}\n\`\`\``;
+          replaceText(v, marker, md);
+          setNotice({ kind: 'ok', text: `${f.name} 已上傳` });
+        } catch (e) {
+          replaceText(v, marker, '');
+          setNotice({ kind: 'error', text: (e as Error).message });
+        }
+      }
+    },
+    [upload, category],
+  );
+
+  // 同步捲動：滑鼠在哪一邊，就由那一邊帶動另一邊
+  const driver = useRef<'editor' | 'preview'>('editor');
+  const frame = useRef(0);
+
+  const syncScroll = useCallback((from: 'editor' | 'preview') => {
+    const v = cmRef.current;
+    const pv = previewRef.current;
+    if (!v || !pv) return;
+    const sc = v.scrollDOM;
+    const lines = v.state.doc.lines;
+    const editorTop = (line: number) => (line > lines ? v.contentHeight : v.lineBlockAt(v.state.doc.line(line).from).top);
+
+    // 預覽中每個區塊對應的原始碼行號與位置
+    const base = pv.getBoundingClientRect().top - pv.scrollTop;
+    const anchors = [{ line: 1, top: 0 }];
+    pv.querySelectorAll<HTMLElement>('[data-line]').forEach((el) => {
+      const line = Number(el.dataset.line);
+      const top = el.getBoundingClientRect().top - base;
+      const last = anchors[anchors.length - 1];
+      if (line > last.line && line <= lines && top >= last.top) anchors.push({ line, top });
+    });
+    anchors.push({ line: lines + 1, top: pv.scrollHeight });
+    const pairs = anchors.map((a) => ({ e: editorTop(a.line), p: a.top }));
+
+    const [src, dst, key, other] =
+      from === 'editor' ? ([sc, pv, 'e', 'p'] as const) : ([pv, sc, 'p', 'e'] as const);
+    if (src.scrollTop + src.clientHeight >= src.scrollHeight - 4) {
+      dst.scrollTop = dst.scrollHeight;
+      return;
+    }
+    const y = src.scrollTop;
+    let i = 0;
+    while (i < pairs.length - 2 && pairs[i + 1][key] <= y) i++;
+    const a = pairs[i];
+    const b = pairs[i + 1];
+    const ratio = b[key] > a[key] ? Math.min(1, Math.max(0, (y - a[key]) / (b[key] - a[key]))) : 0;
+    dst.scrollTop = a[other] + ratio * (b[other] - a[other]);
+  }, []);
+
+  const requestSync = useCallback(
+    (from: 'editor' | 'preview') => {
+      if (driver.current !== from) return;
+      cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(() => syncScroll(from));
+    },
+    [syncScroll],
+  );
+
+  useEffect(() => {
+    if (!cm) return;
+    const onScroll = () => requestSync('editor');
+    cm.scrollDOM.addEventListener('scroll', onScroll);
+    return () => cm.scrollDOM.removeEventListener('scroll', onScroll);
+  }, [cm, requestSync]);
+
+  // 打字後預覽重新排版，再對齊一次
+  useEffect(() => {
+    if (view === 'split') requestSync('editor');
+  }, [body, view, requestSync]);
 
   const save = useCallback(async () => {
     if (!token) return;
@@ -538,25 +651,72 @@ export default function Editor() {
       </div>
 
       <div className="toolbar">
-        <button onClick={() => insert('**', '**', '粗體')} title="粗體">
+        <button onClick={() => insert('**', '**', '粗體')} title="粗體（Ctrl+B）">
           <b>B</b>
         </button>
-        <button onClick={() => insert('*', '*', '斜體')} title="斜體">
+        <button onClick={() => insert('*', '*', '斜體')} title="斜體（Ctrl+I）">
           <i>I</i>
         </button>
-        <button onClick={() => insert('\n## ', '', '標題')} title="標題">
+        <button onClick={() => insert('~~', '~~', '刪除線')} title="刪除線（Ctrl+Shift+X）">
+          <s>S</s>
+        </button>
+        <button onClick={() => run((v) => toggleLinePrefix(v, () => '## ', /^#{1,6} /))} title="標題">
           H
         </button>
-        <button onClick={() => insert('[', '](https://)', '連結文字')} title="連結">
-          🔗
+        <span className="toolbar-sep" />
+        <button onClick={() => run((v) => toggleLinePrefix(v, () => '- ', /^\s*[-*+] (\[[ xX]\] )?/))} title="項目清單">
+          •≡
         </button>
-        <button onClick={() => insert('\n> ', '', '引用')} title="引用">
+        <button onClick={() => run((v) => toggleLinePrefix(v, (i) => `${i + 1}. `, /^\s*\d+\. /))} title="編號清單">
+          1.
+        </button>
+        <button onClick={() => run((v) => toggleLinePrefix(v, () => '- [ ] ', /^\s*[-*+] \[[ xX]\] /))} title="待辦清單">
+          ☑
+        </button>
+        <button onClick={() => run((v) => toggleLinePrefix(v, () => '> ', /^> ?/))} title="引用">
           ❝
         </button>
-        <button onClick={() => insert('\n```\n', '\n```\n', 'code')} title="程式碼">
+        <span className="toolbar-sep" />
+        <button onClick={() => insert('[', '](https://)', '連結文字')} title="連結（Ctrl+K）">
+          🔗
+        </button>
+        <button onClick={() => run((v) => wrapContainer(v, '```', '```', 'code'))} title="程式碼區塊">
           {'</>'}
         </button>
-        <button onClick={() => imageInput.current?.click()} title="上傳圖片">
+        <button
+          onClick={() => run((v) => insertBlock(v, '| 欄位 1 | 欄位 2 | 欄位 3 |\n| --- | --- | --- |\n|  |  |  |', 2))}
+          title="表格"
+        >
+          ▦
+        </button>
+        <button onClick={() => insert('$', '$', 'E = mc^2')} title="數學式（行內）">
+          ∑
+        </button>
+        <button onClick={() => run((v) => insertBlock(v, '---'))} title="分隔線">
+          ―
+        </button>
+        <select
+          className="toolbar-select"
+          value=""
+          title="HackMD 提示框"
+          onChange={(e) => {
+            const kind = e.target.value;
+            if (kind === 'spoiler') run((v) => wrapContainer(v, ':::spoiler 點擊展開', ':::', '藏起來的內容'));
+            else if (kind) run((v) => wrapContainer(v, `:::${kind}`, ':::', '內容'));
+          }}
+        >
+          <option value="">提示框…</option>
+          <option value="info">ℹ️ info</option>
+          <option value="success">✅ success</option>
+          <option value="warning">⚠️ warning</option>
+          <option value="danger">⛔ danger</option>
+          <option value="spoiler">▸ 摺疊區塊</option>
+        </select>
+        <button onClick={() => run((v) => insertBlock(v, '[TOC]'))} title="插入目錄">
+          目錄
+        </button>
+        <span className="toolbar-sep" />
+        <button onClick={() => imageInput.current?.click()} title="上傳圖片（也可以直接貼上或拖曳）">
           🖼 圖片
         </button>
         <input
@@ -582,22 +742,45 @@ export default function Editor() {
       </div>
 
       <div className={`editor-panes view-${view}`}>
-        {view !== 'preview' && (
-          <textarea
-            ref={textarea}
-            className="editor-textarea"
+        {/* 編輯器一直保留，切到「預覽」只是藏起來，復原紀錄才不會不見 */}
+        <div
+          className="editor-pane"
+          onPointerEnter={() => (driver.current = 'editor')}
+          onWheel={() => (driver.current = 'editor')}
+          onTouchStart={() => (driver.current = 'editor')}
+          onFocus={() => (driver.current = 'editor')}
+        >
+          <CodeEditor
             value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="用 Markdown 開始寫作…"
-            spellCheck={false}
+            onChange={setBody}
+            onReady={onEditorReady}
+            onCursor={setCursor}
+            onFiles={handleFiles}
+            placeholder="用 Markdown 開始寫作…（圖片、影片可以直接貼上或拖曳進來）"
           />
-        )}
+        </div>
         {view !== 'edit' && (
-          <div className="editor-preview">
+          <div
+            className="editor-preview"
+            ref={previewRef}
+            onPointerEnter={() => (driver.current = 'preview')}
+            onWheel={() => (driver.current = 'preview')}
+            onTouchStart={() => (driver.current = 'preview')}
+            onScroll={() => requestSync('preview')}
+          >
             <h1 className="preview-title">{meta.title || '（未命名）'}</h1>
-            <Markdown source={body} resolveMedia={rawMediaUrl} />
+            <Markdown source={body} resolveMedia={rawMediaUrl} sourceLines />
           </div>
         )}
+      </div>
+
+      <div className="editor-status">
+        <span>字數 {body.replace(/\s/g, '').length}</span>
+        <span>共 {body.split('\n').length} 行</span>
+        <span>
+          第 {cursor.line} 行，第 {cursor.col} 欄
+        </span>
+        <span className="editor-status-hint">Ctrl+B 粗體 · Ctrl+I 斜體 · Ctrl+K 連結 · Ctrl+F 搜尋 · Ctrl+S 暫存</span>
       </div>
 
       {showMusic && (

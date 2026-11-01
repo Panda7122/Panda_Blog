@@ -82,6 +82,13 @@ cover: media/1730000000000-cover.jpg
 - 只有 `src` 必填；`cover` 只對音檔播放器有效
 - 解析邏輯在 `frontend/src/components/MusicBlock.tsx`；新增平台支援時改 `detectEmbed`
 
+## 5.4 HackMD 語法（所有分類都可以）
+
+- `:::info` / `:::success` / `:::warning` / `:::danger` … `:::` → 彩色提示框
+- `:::spoiler 標題` … `:::` → 可摺疊區塊
+- 單獨一行 `[TOC]` → h1–h3 自動目錄（標題 id 由 rehype-slug 產生）
+- 實作在 `frontend/src/lib/hackmd.ts`（remark-directive + 自訂外掛）；文中像 `key:value` 這種會被 remark-directive 誤判成 text directive 的寫法會被還原成原文字，不用跳脫
+
 ## 5.5 影片（所有分類都可以）
 
 ````markdown

@@ -394,6 +394,26 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 .admin-list small { display: block; color: var(--muted); font-size: 0.78rem; font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; }
 .row-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
+/* ---------- HackMD 語法：提示框、摺疊、目錄 ---------- */
+.prose h1, .prose h2, .prose h3, .prose h4 { scroll-margin-top: 84px; }
+.hk-box { margin: 1.2em 0; padding: 12px 18px; border-radius: 12px; border-left: 4px solid; }
+.hk-box > :first-child { margin-top: 0; }
+.hk-box > :last-child { margin-bottom: 0; }
+.hk-box-title { font-weight: 700; }
+.hk-info { background: #eef3fe; border-color: #6b8de3; color: #2b4a8f; }
+.hk-success { background: #e9f8f1; border-color: #3fb37f; color: #1f6b48; }
+.hk-warning { background: #fff6e2; border-color: #e0a63a; color: #8a5a08; }
+.hk-danger { background: #fdeef2; border-color: #e0607e; color: #a8264a; }
+.hk-spoiler { margin: 1.2em 0; padding: 10px 16px; border: 1px solid var(--lav-200); border-radius: 12px; background: var(--lav-50); }
+.hk-spoiler > summary { cursor: pointer; font-weight: 600; color: var(--lav-700); margin: 0; }
+.hk-spoiler[open] > summary { margin-bottom: 8px; }
+.toc { margin: 1.2em 0; padding: 14px 20px; border: 1px solid var(--lav-200); border-radius: 14px; background: var(--lav-50); }
+.toc .toc-title { margin: 0 0 6px; font-weight: 700; color: var(--lav-800); }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 2px 0; }
+.toc .toc-l1 { padding-left: 1.1em; }
+.toc .toc-l2 { padding-left: 2.2em; font-size: 0.94em; }
+
 /* ---------- 按讚與留言 ---------- */
 .interactions { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); padding: clamp(20px, 4vw, 40px) clamp(20px, 5vw, 56px); max-width: 820px; margin: 24px auto 0; }
 .like-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
@@ -447,14 +467,21 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 .toolbar-hint { margin-left: auto; font-size: 0.8rem; color: var(--muted); padding-right: 8px; }
 .editor-panes { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 0 0 12px 12px; overflow: hidden; height: calc(100vh - 330px); min-height: 420px; background: var(--surface); }
 .editor-panes.view-edit, .editor-panes.view-preview { grid-template-columns: 1fr; }
-.editor-textarea { border: 0; resize: none; padding: 20px; font-family: var(--font-mono); font-size: 0.92rem; line-height: 1.75; background: #fdfcff; height: 100%; }
-.editor-textarea:focus { outline: none; }
+.editor-pane { min-width: 0; height: 100%; overflow: hidden; }
+.view-preview .editor-pane { display: none; }
+.code-editor { height: 100%; }
+.toolbar-sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--border); }
+.toolbar .toolbar-select { border: 0; background: transparent; padding: 6px 8px; border-radius: 8px; font: inherit; font-size: 0.85rem; color: var(--lav-800); cursor: pointer; }
+.toolbar .toolbar-select:hover { background: var(--lav-100); }
+.editor-status { display: flex; gap: 16px; flex-wrap: wrap; padding: 6px 4px 0; font-size: 0.78rem; color: var(--muted); }
+.editor-status-hint { margin-left: auto; }
 .editor-preview { padding: 20px 32px; overflow-y: auto; border-left: 1px solid var(--border); }
 .view-preview .editor-preview { border-left: 0; max-width: 820px; margin: 0 auto; width: 100%; }
 .preview-title { font-family: var(--font-serif); color: var(--lav-800); margin-top: 0; }
 @media (max-width: 860px) {
   .editor-panes { grid-template-columns: 1fr; height: auto; }
-  .editor-textarea { min-height: 420px; }
+  .editor-pane { height: 60vh; }
+  .editor-status-hint { display: none; }
   .editor-preview { border-left: 0; border-top: 1px solid var(--border); }
 }
 
