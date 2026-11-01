@@ -2,6 +2,7 @@
 title: "歌曲分享：Bruno Mars 的 Just the way you are"
 date: 2026-11-01
 tags: ["歌曲分享","Pop","Bruno Mars"]
+summary: "Just the way you are　歌曲分享"
 ---
 ```music
 title: Just the way you are
