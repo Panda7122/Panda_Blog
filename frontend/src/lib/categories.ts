@@ -30,7 +30,17 @@ export const categories: Category[] = [
       { slug: 'system', name: 'System', icon: '🖥️', description: '系統、架構與工具' },
     ],
   },
-  { slug: 'drawing', name: 'Drawing', icon: '🎨', description: '塗鴉與作品' },
+  { slug: 'cooking', name: 'Cooking', icon: '🍳', description: '料理與食譜' },
+  {
+    slug: 'art',
+    name: 'Art & Craft',
+    icon: '🎨',
+    description: '動手做出來的東西',
+    children: [
+      { slug: 'drawing', name: 'Drawing', icon: '🖌️', description: '繪畫、塗鴉與作品' },
+      { slug: 'handcraft', name: 'Handcraft', icon: '🧶', description: '手工作品' },
+    ],
+  },
   { slug: 'game', name: 'Game', icon: '🎮', description: '遊戲紀錄與心得' },
   { slug: 'others', name: 'Others', icon: '🗂️', description: '其他雜記' },
 ];

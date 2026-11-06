@@ -15,7 +15,7 @@ content/public/      靜態檔，上傳的音樂/圖片在 content/public/media/
 
 ## 分欄
 
-Coffee · Sport（Badminton / Other）· Music · Computer Science（Algorithm / MIR / System）· Drawing · Game · Others
+Coffee · Sport（Badminton / Other）· Music · Computer Science（Algorithm / MIR / System）· Cooking · Art & Craft（Drawing / Handcraft）· Game · Others
 定義在 `frontend/src/lib/categories.ts`。
 
 ## 首頁圖片

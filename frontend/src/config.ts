@@ -14,6 +14,8 @@ export const config = {
     { kind: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/panda.coffee._._/' },
     { kind: 'github', label: 'GitHub', url: 'https://github.com/Panda7122/' },
   ] as { kind: 'instagram' | 'github'; label: string; url: string }[],
+  // 網站開張日，首頁「已經架設 N 天」從這天算第 1 天
+  launchDate: '2026-10-29',
   owner,
   repo,
   branch: import.meta.env.VITE_GITHUB_BRANCH || 'master',

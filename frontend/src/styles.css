@@ -232,6 +232,13 @@ label input:focus, label select:focus, textarea:focus, .title-input:focus { outl
 }
 .social-links a:hover { transform: translateY(-2px); background: var(--lav-600); border-color: var(--lav-600); color: #fff; }
 
+.site-stats { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.site-stat {
+  padding: 5px 14px; border-radius: 999px; font-size: 0.9rem; color: var(--lav-700);
+  background: var(--surface); border: 1px solid var(--lav-200); box-shadow: var(--shadow);
+}
+.site-stat b { color: var(--lav-800); font-size: 1.05rem; margin: 0 2px; }
+
 /* ---------- category cards ---------- */
 .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
 .category-card {

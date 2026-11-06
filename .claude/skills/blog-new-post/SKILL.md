@@ -18,11 +18,13 @@ description: Create or edit a blog post in this repo (content/posts/<category>/<
 | Computer Science / Algorithm | `computer-science/algorithm` |
 | Computer Science / MIR | `computer-science/mir` |
 | Computer Science / System | `computer-science/system` |
-| Drawing | `drawing` |
+| Cooking | `cooking` |
+| Art & Craft / Drawing | `art/drawing` |
+| Art & Craft / Handcraft | `art/handcraft` |
 | Game | `game` |
 | Others | `others` |
 
-這張表的真實來源是 `frontend/src/lib/categories.ts`；若兩者不一致，以程式碼為準並更新這張表。不要放在 `sport/`、`computer-science/` 這種有子分類的父層，網站不會顯示。
+這張表的真實來源是 `frontend/src/lib/categories.ts`；若兩者不一致，以程式碼為準並更新這張表。不要放在 `sport/`、`computer-science/`、`art/` 這種有子分類的父層，網站不會顯示。
 
 ## 2. 檔名（slug）
 

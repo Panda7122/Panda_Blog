@@ -6,6 +6,14 @@ import { allPosts, pinnedPosts, postsIn } from '../lib/posts';
 import { PostCard } from '../components/PostCard';
 import { SocialLinks } from '../components/SocialLinks';
 
+/** 從開張日算第 1 天，用本地日期計算，跨午夜就加一 */
+function daysSinceLaunch(launch: string, now = new Date()): number {
+  const [y, m, d] = launch.split('-').map(Number);
+  const start = Date.UTC(y, m - 1, d);
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(1, Math.floor((today - start) / 86400000) + 1);
+}
+
 export default function Home() {
   const latest = allPosts.filter((p) => !p.pinned).slice(0, 6);
   const [heroOk, setHeroOk] = useState(true);
@@ -18,6 +26,14 @@ export default function Home() {
           )}
           <p className="hero-tagline">{config.tagline}</p>
           <SocialLinks />
+          <div className="site-stats">
+            <span className="site-stat">
+              <b>{allPosts.length}</b> 篇文章
+            </span>
+            <span className="site-stat">
+              已經架設 <b>{daysSinceLaunch(config.launchDate)}</b> 天
+            </span>
+          </div>
         </div>
       </section>
 
