@@ -1,5 +1,5 @@
 /**
- * 碎心日記的後端：GitHub OAuth 換 token，以及按讚 / 匿名留言 API（見 interact.ts）。
+ * 熊貓日記的後端：GitHub OAuth 換 token，以及按讚 / 匿名留言 API（見 interact.ts）。
  *
  * GET /login?origin=<前端 origin>  → 導向 GitHub 授權頁
  * GET /callback?code&state         → 用 client secret 換 access token，
