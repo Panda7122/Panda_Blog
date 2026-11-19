@@ -126,11 +126,8 @@ code { font-family: var(--font-mono); }
 }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
 .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--lav-800); white-space: nowrap; }
-.brand-mark {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: radial-gradient(circle, var(--lav-500) 0 18%, var(--lav-100) 19% 55%, var(--lav-500) 56%);
-  box-shadow: 0 2px 8px rgba(154, 114, 240, 0.4);
-}
+.brand-mark { flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(154, 114, 240, 0.35)); transition: transform 0.2s; }
+.brand:hover .brand-mark { transform: rotate(-8deg) scale(1.05); }
 .nav { display: flex; align-items: center; gap: 4px; }
 .nav-item { position: relative; }
 .nav-link {

@@ -1,0 +1,20 @@
+// 左上角的熊貓 logo（content/public/favicon.svg 是同一隻）
+export function PandaLogo({ size = 34 }: { size?: number }) {
+  return (
+    <svg className="brand-mark" viewBox="0 0 64 64" width={size} height={size} aria-hidden>
+      <circle cx="15" cy="17" r="9" fill="#4a3185" />
+      <circle cx="49" cy="17" r="9" fill="#4a3185" />
+      <ellipse cx="32" cy="35" rx="24" ry="22" fill="#fff" stroke="#4a3185" strokeWidth="2.5" />
+      <ellipse cx="22" cy="34" rx="6.5" ry="8.5" fill="#4a3185" transform="rotate(32 22 34)" />
+      <ellipse cx="42" cy="34" rx="6.5" ry="8.5" fill="#4a3185" transform="rotate(-32 42 34)" />
+      <circle cx="23" cy="32.5" r="2.6" fill="#fff" />
+      <circle cx="41" cy="32.5" r="2.6" fill="#fff" />
+      <circle cx="23.6" cy="32.8" r="1.3" fill="#2d2442" />
+      <circle cx="40.4" cy="32.8" r="1.3" fill="#2d2442" />
+      <ellipse cx="16.5" cy="43" rx="3.6" ry="2.6" fill="#d4c1fd" />
+      <ellipse cx="47.5" cy="43" rx="3.6" ry="2.6" fill="#d4c1fd" />
+      <ellipse cx="32" cy="42.5" rx="3.6" ry="2.5" fill="#4a3185" />
+      <path d="M32 45v2.2M28.5 47.5c1.6 1.4 3.5 1.4 3.5 0 0 1.4 1.9 1.4 3.5 0" fill="none" stroke="#4a3185" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}

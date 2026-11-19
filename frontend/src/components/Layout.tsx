@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { config } from '../config';
 import { categories } from '../lib/categories';
+import { PandaLogo } from './PandaLogo';
 import { BackgroundDecor } from './BackgroundDecor';
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -19,7 +20,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <header className="site-header">
         <div className="container header-inner">
           <Link to="/" className="brand">
-            <span className="brand-mark" aria-hidden />
+            <PandaLogo />
             {config.siteTitle}
           </Link>
           <button
