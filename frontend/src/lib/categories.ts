@@ -28,6 +28,7 @@ export const categories: Category[] = [
       { slug: 'algorithm', name: 'Algorithm', icon: '🧮', description: '演算法與解題' },
       { slug: 'mir', name: 'MIR', icon: '🎼', description: 'Music Information Retrieval' },
       { slug: 'system', name: 'System', icon: '🖥️', description: '系統、架構與工具' },
+      { slug: 'others', name: 'Others', icon: '🧩', description: '其他資訊相關的筆記' },
     ],
   },
   { slug: 'cooking', name: 'Cooking', icon: '🍳', description: '料理與食譜' },

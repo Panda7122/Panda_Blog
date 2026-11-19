@@ -18,6 +18,7 @@ description: Create or edit a blog post in this repo (content/posts/<category>/<
 | Computer Science / Algorithm | `computer-science/algorithm` |
 | Computer Science / MIR | `computer-science/mir` |
 | Computer Science / System | `computer-science/system` |
+| Computer Science / Others | `computer-science/others` |
 | Cooking | `cooking` |
 | Art & Craft / Drawing | `art/drawing` |
 | Art & Craft / Handcraft | `art/handcraft` |
